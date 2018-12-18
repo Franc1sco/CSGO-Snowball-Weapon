@@ -26,7 +26,7 @@ public Plugin myinfo =
 {
 	name = "SM CS:GO SnowBall Weapon",
 	author = "Franc1sco franug",
-	description = "Force players to spawn different melee weapons",
+	description = "For use the new weapon_snowball",
 	version = DATA,
 	url = "http://steamcommunity.com/id/franug"
 };
