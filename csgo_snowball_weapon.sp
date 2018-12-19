@@ -84,6 +84,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
     CreateTimer(g_fTimer, Timer_Delay, GetClientUserId(client));
 }  
 
+
 public Action Timer_Delay(Handle timer, int id)
 {
 	// check if client valid
@@ -93,14 +94,14 @@ public Action Timer_Delay(Handle timer, int id)
 			
 	// remove all the snowball weapons for prevent extra weapons on ground
 	StripAllSnowBalls(client);
-	
-	if(g_iSnowballs > 0)
+	int SnowBallEnt = GivePlayerItem(client, "weapon_snowball");
+	if(SnowBallEnt > MaxClients && g_iSnowballs > 1)
 	{
-		for (int i = 0; i < g_iSnowballs; i++)
-			GivePlayerItem(client, "weapon_snowball");
+		SetEntProp(client, Prop_Send, "m_iAmmo", g_iSnowballs, _, GetEntProp(SnowBallEnt, Prop_Send, "m_iPrimaryAmmoType"));
 	}
 }
-	
+
+
 stock void StripAllSnowBalls(int client)
 {
 	int m_hMyWeapons_size = GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); // array size 
