@@ -91,13 +91,17 @@ public Action Timer_Delay(Handle timer, int id)
 	int client = GetClientOfUserId(id);
 	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client) || (g_iTeam < 4 && g_iTeam != GetClientTeam(client)))
 		return;
-			
+	
 	// remove all the snowball weapons for prevent extra weapons on ground
 	StripAllSnowBalls(client);
-	int SnowBallEnt = GivePlayerItem(client, "weapon_snowball");
-	if(SnowBallEnt > MaxClients && g_iSnowballs > 1)
+	
+	if(g_iSnowballs > 0)
 	{
-		SetEntProp(client, Prop_Send, "m_iAmmo", g_iSnowballs, _, GetEntProp(SnowBallEnt, Prop_Send, "m_iPrimaryAmmoType"));
+		int SnowBallEnt = GivePlayerItem(client, "weapon_snowball");
+		if(g_iSnowballs > 1 && SnowBallEnt > MaxClients)
+		{
+			SetEntProp(client, Prop_Send, "m_iAmmo", g_iSnowballs, _, GetEntProp(SnowBallEnt, Prop_Send, "m_iPrimaryAmmoType"));
+		}
 	}
 }
 
