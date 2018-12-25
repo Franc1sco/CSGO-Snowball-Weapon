@@ -20,7 +20,7 @@
 #include <sdktools>
 #include <cstrike>
 
-#define DATA "1.0"
+#define DATA "1.1"
 
 public Plugin myinfo =
 {
