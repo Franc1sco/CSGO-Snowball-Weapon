@@ -1,6 +1,6 @@
 /*  SM CS:GO SnowBall Weapon
  *
- *  Copyright (C) 2018 Francisco 'Franc1sco' García
+ *  Copyright (C) 2018-2019 Francisco 'Franc1sco' García
  * 
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -19,8 +19,12 @@
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
+#undef REQUIRE_PLUGIN
+#include <franug_deadgames>
+#include <myjailbreak>
+#define REQUIRE_PLUGIN
 
-#define DATA "1.1"
+#define DATA "1.2"
 
 public Plugin myinfo =
 {
@@ -38,6 +42,9 @@ ConVar cv_wtimer;
 int g_iTeam;
 int g_iSnowballs;
 float g_fTimer;
+
+bool gp_bDeadGames;
+bool gp_bMyJailBreak;
 
 public void OnPluginStart()
 {
@@ -63,6 +70,34 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
 	AutoExecConfig(true, "csgo_snowball_weapon");
+	
+	gp_bDeadGames = LibraryExists("franug_deadgames");
+	gp_bMyJailBreak = LibraryExists("myjailbreak");
+}
+
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "franug_deadgames"))
+	{
+		gp_bDeadGames = false;
+	}
+	else if (StrEqual(name, "myjailbreak"))
+	{
+		gp_bMyJailBreak = false;
+	}
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "franug_deadgames"))
+	{
+		gp_bDeadGames = true;
+	}
+	else if (StrEqual(name, "myjailbreak"))
+	{
+		gp_bMyJailBreak = true;
+	}
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldVal, const char[] newVal)
@@ -78,10 +113,14 @@ public void OnConVarChanged(ConVar convar, const char[] oldVal, const char[] new
 
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	if (gp_bMyJailBreak && MyJailbreak_IsEventDayRunning())return;
+	
+	int client = GetClientOfUserId(GetEventInt(event, "userid"));
     
-    // delay for don't conflict with others plugins that give weapons on spawn (?)
-    CreateTimer(g_fTimer, Timer_Delay, GetClientUserId(client));
+	if (gp_bDeadGames && DeadGames_IsOnGame(client))return;
+    
+	// delay for don't conflict with others plugins that give weapons on spawn (?)
+	CreateTimer(g_fTimer, Timer_Delay, GetClientUserId(client));
 }  
 
 
